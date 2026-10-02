@@ -1,0 +1,64 @@
+{
+  "name": "antigravity-token-telemetry",
+  "displayName": "Antigravity Token Telemetry",
+  "description": "Displays live Antigravity model, context tokens, turn delta, latency (TTFT), and KV cache hits in the native VS Code Status Bar.",
+  "version": "1.0.0",
+  "publisher": "antigravity",
+  "engines": {
+    "vscode": "^1.70.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "antigravity",
+    "gemini",
+    "telemetry",
+    "token",
+    "status bar",
+    "llm",
+    "kv cache"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "antigravity.showTelemetry",
+        "title": "Antigravity: Show Usage Telemetry Details",
+        "category": "Antigravity"
+      },
+      {
+        "command": "antigravity.refreshTelemetry",
+        "title": "Antigravity: Refresh Status Bar",
+        "category": "Antigravity"
+      }
+    ],
+    "configuration": {
+      "title": "Antigravity Telemetry",
+      "properties": {
+        "antigravity.statusBar.alignment": {
+          "type": "string",
+          "enum": [
+            "left",
+            "right"
+          ],
+          "default": "right",
+          "description": "Alignment of the Antigravity telemetry item in the status bar."
+        },
+        "antigravity.statusBar.priority": {
+          "type": "integer",
+          "default": 100,
+          "description": "Priority order of the status bar item."
+        },
+        "antigravity.statusBar.fallbackToGlobal": {
+          "type": "boolean",
+          "default": true,
+          "description": "Fall back to global Antigravity telemetry (~/.gemini/antigravity/telemetry) if no workspace file is found."
+        }
+      }
+    }
+  }
+}

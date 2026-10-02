@@ -1,0 +1,5 @@
+{
+  "name": "antigravity-token-telemetry",
+  "version": "1.0.0",
+  "description": "Lifecycle hook that tracks token usage, turn deltas, TTFT latency, and KV cache hits into .vscode and global status files."
+}

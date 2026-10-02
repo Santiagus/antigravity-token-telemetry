@@ -1,0 +1,6 @@
+.git/**
+.gitignore
+.vscodeignore
+hook/**
+scripts/**
+.vscode/**

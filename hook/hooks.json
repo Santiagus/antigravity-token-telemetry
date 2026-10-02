@@ -1,0 +1,18 @@
+{
+  "token-telemetry": {
+    "PostInvocation": [
+      {
+        "type": "command",
+        "command": "python3 hook/log_tokens.py 2>/dev/null || python3 hooks/log_tokens.py 2>/dev/null || python3 .agents/hooks/log_tokens.py 2>/dev/null || python3 ~/.gemini/config/plugins/antigravity-token-telemetry/log_tokens.py 2>/dev/null || python3 log_tokens.py 2>/dev/null",
+        "timeout": 15
+      }
+    ],
+    "Stop": [
+      {
+        "type": "command",
+        "command": "python3 hook/log_tokens.py 2>/dev/null || python3 hooks/log_tokens.py 2>/dev/null || python3 .agents/hooks/log_tokens.py 2>/dev/null || python3 ~/.gemini/config/plugins/antigravity-token-telemetry/log_tokens.py 2>/dev/null || python3 log_tokens.py 2>/dev/null",
+        "timeout": 15
+      }
+    ]
+  }
+}
