@@ -57,6 +57,21 @@
           "type": "boolean",
           "default": true,
           "description": "Fall back to global Antigravity telemetry (~/.gemini/antigravity/telemetry) if no workspace file is found."
+        },
+        "antigravity.statusBar.enableHealthColors": {
+          "type": "boolean",
+          "default": true,
+          "description": "Color status bar item with warning (yellow) or error (red) semaphore backgrounds when context grows large."
+        },
+        "antigravity.statusBar.warningThreshold": {
+          "type": "integer",
+          "default": 100000,
+          "description": "Token count threshold (yellow warning) indicating context footprint is getting heavy."
+        },
+        "antigravity.statusBar.criticalThreshold": {
+          "type": "integer",
+          "default": 200000,
+          "description": "Token count threshold (red error) indicating very large context, recommending a new chat session or file optimization."
         }
       }
     }

@@ -224,13 +224,10 @@ def main() -> None:
     cache_pct = min(100, max(0, int(round((cached_tokens / prompt_tokens) * 100))))
     cached_formatted = f"{_format_tokens(cached_tokens)} ({cache_pct}%) cached"
 
-    if cache_hit and cached_tokens > 0:
-        status_line = (
-            f"{model_display} | $(sparkle) {total_str} ({delta_str}) | "
-            f"$(database) {cached_formatted} | TTFT {ttft_str}"
-        )
-    else:
-        status_line = f"{model_display} | $(sparkle) {total_str} ({delta_str}) | TTFT {ttft_str}"
+    status_line = (
+        f"{model_display} | Tokens {total_str} ({delta_str}) | "
+        f"{cache_pct}% cache hit | TTFT {ttft_str}"
+    )
 
     telemetry_data = {
         "model": model_display,
