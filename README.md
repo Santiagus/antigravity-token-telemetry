@@ -23,17 +23,40 @@ Each metric diagnoses a different bottleneck independently:
 * **KV Cache Hit %**: `🟢 >=70%` (Optimal reuse) | `🟡 40-69%` (Moderate) | `🔴 <40%` (Prefix invalidation detected).
 * **Latency (TTFT)**: `🟢 <2.5s` (Fast response) | `🟡 2.5s-4.5s` (Elevated) | `🔴 >4.5s` (High delay/stalling).
 
-### 💡 Combination-Aware Hover Tooltip
-Hovering over the status bar item displays an intelligent diagnosis that considers metric combinations:
-* *Example (High Context + Fast TTFT + High Cache)*: Recognizes that cost and speed are mitigated by prompt caching, advising that the primary remaining risk is **attention dilution** across complex tasks.
-* *Example (Low Cache Hit)*: Flags prompt prefix invalidation caused by dynamic instructions or changing files early in the prompt.
-* *Scorecard Breakdown*: Displays per-metric grades and stats cleanly.
+### 🔬 Technical Diagnosis & Actionable Advice
+Hovering over the status bar item displays a verbose Markdown tooltip clearly separated into:
+* **🔬 Technical Diagnosis**: Explains the technical cause (e.g. cumulative tokens, KV cache prefix invalidation, attention dilution, or reasoning queueing).
+* **💡 Actionable Advice**: Concrete instructions on what to do (e.g. `/clear` or fresh session, pruning instructions in `.agents/`, optimizing skill prefixes).
+* **🚦 Telemetry Scorecard**: Visual breakdown of per-metric status dots and readings.
+* **ℹ️ Session Footprint**: Complete model, prompt/candidate token counts, steps, and last turn timestamp.
 
-### 🔔 Critical State Notification Popup
-A non-intrusive VS Code notification popup appears when your session transitions into a critical state, with quick actions to start a new session or configure thresholds.
+### 🔔 Brief Recommended Action Alert Popups
+When a situation is detected that calls for starting a new chat or optimizing agent/skill files (e.g. critical token load, low cache prefix invalidation, or heavy context):
+* A brief, non-intrusive VS Code warning popup appears with the recommended action (e.g., *"Antigravity Telemetry: Start a fresh chat session immediately to avoid high latency and token costs"*).
+* Popups remain concise to preserve screen focus, while the status bar hover tooltip provides the full deep-dive diagnosis.
+* Alert popups can be toggled on or off anytime via settings (`antigravity.statusBar.enableCriticalAlertPopup`).
 
-### Interactive QuickPick Inspection
-Clicking the status bar item opens an interactive modal menu to inspect all metrics, review health advice with one-click settings access, or jump directly to the raw `usage_metadata.json` file.
+### 📱 Interactive QuickPick Inspection
+Clicking the status bar item opens an interactive modal menu allowing you to:
+* View detailed metric scorecards and full token counters.
+* Open the **Health Diagnosis & Advice** dialog with one-click access to settings.
+* Launch the **Scenario Simulator** to preview different alert states.
+* Open the raw `usage_metadata.json` file directly in the editor.
+
+---
+
+## 🧪 Testing & Simulating Scenarios
+
+You can verify the status bar colors, verbose hover tooltips, and brief alert popups without waiting for a live agent session:
+
+1. Press `Ctrl+Shift+P` (or `Cmd+Shift+P` on macOS).
+2. Run **`Antigravity Telemetry: Simulate Scenario`** (or click the status bar item and select `🧪 Simulate Scenario...`).
+3. Select any built-in scenario:
+   * **🟢 Optimal (All Healthy)**: Compact context, 90% cache hit, ~1.0s TTFT.
+   * **🔴 Attention Dilution**: High context (>200k) with fast TTFT & high cache.
+   * **🛑 Critical Load**: High context (>200k) + low cache (<40%) + high TTFT (>4.5s).
+   * **🔴 Prefix Invalidation**: Low cache hit (<40%) diagnosing unstable prompt prefixes.
+   * **🟡 Heavy Context**: Context crossing the warning threshold (100k-200k).
 
 ---
 
@@ -66,7 +89,7 @@ cd antigravity-token-telemetry
 ```
 
 This will:
-1. Package the extension into `dist/antigravity-token-telemetry-1.0.0.vsix`.
+1. Package the extension into `dist/antigravity-token-telemetry-1.1.3.vsix`.
 2. Install the Antigravity lifecycle hook globally into `~/.gemini/config/plugins/antigravity-token-telemetry/` so it automatically tracks **all** projects.
 3. Install the `.vsix` into VS Code.
 
@@ -92,25 +115,44 @@ chmod +x ~/.gemini/config/plugins/antigravity-token-telemetry/log_tokens.py
 2. In VS Code:
    - Open Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`)
    - Select **Extensions: Install from VSIX...**
-   - Choose `dist/antigravity-token-telemetry-1.0.0.vsix`
+   - Choose `dist/antigravity-token-telemetry-1.1.3.vsix`
+
+---
+
+## ⌨️ Command Palette Actions
+
+Press `Ctrl+Shift+P` (or `Cmd+Shift+P` on macOS) to access:
+
+| Command | Description |
+| :--- | :--- |
+| `Antigravity Telemetry: Show Usage Telemetry Details` | Opens interactive inspection modal with metric scorecards and health diagnosis. |
+| `Antigravity Telemetry: Refresh Status Bar` | Re-reads telemetry files and updates the status bar immediately. |
+| `Antigravity Telemetry: Simulate Scenario` | Launches interactive scenario picker to simulate any metric combination live. |
 
 ---
 
 ## ⚙️ Extension Settings
- 
+
+Settings are neatly grouped into two dedicated sections in VS Code Settings (`Preferences: Open Settings`):
+
+### 1. Antigravity Telemetry: Status Bar
 | Setting | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
 | `antigravity.statusBar.alignment` | `string` | `"right"` | Alignment in the status bar (`"left"` or `"right"`). |
 | `antigravity.statusBar.priority` | `integer` | `100` | Order priority of the status bar item. |
 | `antigravity.statusBar.fallbackToGlobal` | `boolean` | `true` | Reads global Antigravity telemetry if no workspace file is found. |
-| `antigravity.statusBar.enableHealthColors` | `boolean` | `true` | Color status bar item with warning/error backgrounds based on context health. |
-| `antigravity.statusBar.warningThreshold` | `integer` | `100000` | Token threshold (yellow warning background) indicating context footprint is getting heavy. |
-| `antigravity.statusBar.criticalThreshold` | `integer` | `200000` | Token threshold (red error background) recommending a fresh chat or context optimization. |
-| `antigravity.statusBar.cacheWarningThreshold` | `integer` | `70` | KV cache hit percentage below which a warning indicator (yellow) is shown. |
-| `antigravity.statusBar.cacheCriticalThreshold` | `integer` | `40` | KV cache hit percentage below which a critical indicator (red) is shown. |
-| `antigravity.statusBar.ttftWarningThreshold` | `number` | `2.5` | Time to First Token (seconds) above which a warning indicator (yellow) is shown. |
-| `antigravity.statusBar.ttftCriticalThreshold` | `number` | `4.5` | Time to First Token (seconds) above which a critical indicator (red) is shown. |
-| `antigravity.statusBar.enableCriticalAlertPopup` | `boolean` | `true` | Display a notification message popup when any metric enters a critical state. |
+
+### 2. Antigravity Telemetry: Thresholds & Health Alerts
+| Setting | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `antigravity.statusBar.enableHealthColors` | `boolean` | `true` | Checkbox to enable/disable warning (yellow) and error (red) semaphore background highlights. |
+| `antigravity.statusBar.enableCriticalAlertPopup` | `boolean` | `true` | Show brief recommended action popups when a situation suggests starting a new chat or optimizing agent/skills. |
+| `antigravity.statusBar.warningThreshold` | `integer` | `100000` | Context Tokens Warning Threshold (yellow indicator). |
+| `antigravity.statusBar.criticalThreshold` | `integer` | `200000` | Context Tokens Critical Threshold (red indicator). |
+| `antigravity.statusBar.cacheWarningThreshold` | `integer` | `70` | KV Cache Hit % Warning Threshold (yellow indicator). |
+| `antigravity.statusBar.cacheCriticalThreshold` | `integer` | `40` | KV Cache Hit % Critical Threshold (red indicator). |
+| `antigravity.statusBar.ttftWarningThreshold` | `number` | `2.5` | TTFT Latency Warning Threshold in seconds (yellow indicator). |
+| `antigravity.statusBar.ttftCriticalThreshold` | `number` | `4.5` | TTFT Latency Critical Threshold in seconds (red indicator). |
 
 ---
 

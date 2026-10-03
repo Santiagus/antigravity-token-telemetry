@@ -260,18 +260,15 @@ def main() -> None:
         _safe_write(vdir / "status.txt", status_line + "\n")
         _safe_write(vdir / "usage_metadata.json", telemetry_json)
 
-        # Update settings.json statusbartext fallback
+        # Clean up any legacy statusbartext fallback from settings.json to avoid duplicates
         sfile = vdir / "settings.json"
         try:
-            settings: Dict[str, Any] = {}
             if sfile.exists():
                 with open(sfile, "r", encoding="utf-8") as sf:
                     settings = json.load(sf)
-            settings["statusbartext"] = {
-                "active": True,
-                "text": f"   {status_line}",
-            }
-            _safe_write(sfile, json.dumps(settings, indent=2) + "\n")
+                if "statusbartext" in settings:
+                    del settings["statusbartext"]
+                    _safe_write(sfile, json.dumps(settings, indent=2) + "\n")
         except Exception:
             pass
 

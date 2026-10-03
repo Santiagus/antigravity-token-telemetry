@@ -23,6 +23,15 @@ def build_vsix() -> Path:
 
     dist_dir = repo_root / "dist"
     dist_dir.mkdir(parents=True, exist_ok=True)
+
+    # Clean up older .vsix files so only the active version is retained
+    for old_vsix in dist_dir.glob("*.vsix"):
+        if old_vsix.name != f"{name}-{version}.vsix":
+            try:
+                old_vsix.unlink()
+            except OSError:
+                pass
+
     vsix_path = dist_dir / f"{name}-{version}.vsix"
 
     content_types = """<?xml version="1.0" encoding="utf-8"?>
