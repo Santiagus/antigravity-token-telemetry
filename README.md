@@ -52,7 +52,7 @@ The system is decoupled into two lightweight components:
 ### 1. One-Click Install
 Clone this repo and run the installer script:
 ```bash
-git clone https://github.com/<your-username>/antigravity-token-telemetry.git
+git clone https://github.com/Santiagus/antigravity-token-telemetry.git
 cd antigravity-token-telemetry
 ./scripts/install.sh
 ```
